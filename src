@@ -1,0 +1,239 @@
+# Frogger
+A Frogger game that I have written in Processing and Python
+/*written by Kerem Guventurk
+This version is written for Processing*/
+
+PImage frog;
+PImage truck;
+PImage grass;
+PImage car;
+PImage log;
+PImage sidewalk;
+PImage road;
+void setup() {
+  size(640, 500);
+  background(0);
+  frog = loadImage("Frogger_sprite.png");
+  truck = loadImage("truck.png");
+  grass = loadImage("grass.png");
+  sidewalk = loadImage("sidewalk.png");
+  road = loadImage("images.jpg");
+  car = loadImage("car.png");
+  log = loadImage("120px-Frogger_log.png"); //resimleri programa sketch>add file'dan ekle
+  add();
+}
+int score = 0;
+ArrayList <Obstacle1> list1 = new ArrayList<Obstacle1>();
+ArrayList <Obstacle2> list2 = new ArrayList<Obstacle2>();
+
+void add() {
+  list1.add(new Obstacle1(2,100,378,40));
+  list1.add(new Obstacle1(2,300,378,40));
+  list1.add(new Obstacle1(3,30,346,40));
+  list1.add(new Obstacle1(3,610,346,40));
+  list1.add(new Obstacle1(3,370,346,40));
+  list1.add(new Obstacle1(2,40,314,80));
+  list1.add(new Obstacle1(2,530,314,80));
+  list1.add(new Obstacle1(3,440,282,80));
+  list1.add(new Obstacle1(3,100,282,80));
+  list2.add(new Obstacle2(2,50,160,80));
+  list2.add(new Obstacle2(2,210,160,80));
+  list2.add(new Obstacle2(2,500,160,80));
+  list2.add(new Obstacle2(1,110,130,240));
+  list2.add(new Obstacle2(1,490,130,240));
+  list2.add(new Obstacle2(2,570,100,120));
+  list2.add(new Obstacle2(2,350,100,120));
+  list2.add(new Obstacle2(2,10,100,120));
+  list2.add(new Obstacle2(2,60,70,200));
+  list2.add(new Obstacle2(2,370,70,200));
+  list2.add(new Obstacle2(1,550,40,120));
+  list2.add(new Obstacle2(1,290,40,120));
+  list2.add(new Obstacle2(1,20,40,120));
+}
+int x = 320;
+int y = 440;
+void draw() {
+  background(0);
+  image(sidewalk,0,45,640,45);
+  image(sidewalk,0,90,640,45);
+  image(sidewalk,0,135,640,45);
+  image(sidewalk,0,180,640,45);
+  image(sidewalk,0,225,640,45);
+  image(sidewalk,0,270,640,45);
+  image(sidewalk,0,315,640,45);
+  image(sidewalk,0,360,640,45);
+  image(sidewalk,0,405,640,45);
+  fill(51,51,255);
+  rect(0,40,640,152);
+  fill(0);
+  rect(0,282,640,128);
+  fill(102,0,204);
+  image(road,0,282,640,64);
+  image(road,0,346,640,64);
+  image(grass,0,0,40,40);
+  image(grass,80,0,40,40);
+  image(grass,120,0,40,40);
+  image(grass,200,0,40,40);
+  image(grass,240,0,40,40);
+  image(grass,320,0,40,40);
+  image(grass,360,0,40,40);
+  image(grass,440,0,40,40);
+  image(grass,480,0,40,40);
+  image(grass,560,0,40,40);
+  image(grass,600,0,40,40);
+  for (int i = 0; i < list1.size(); i++) {
+       if (list1.get(i).width == 40) {
+    image(car,list1.get(i).x, list1.get(i).y,list1.get(i).width,32);
+       }
+       else {
+    image(truck,list1.get(i).x, list1.get(i).y,list1.get(i).width,32);  
+       }  
+  }
+    
+  for (int i = 0; i < list2.size(); i++) {
+    image(log,list2.get(i).x, list2.get(i).y,list2.get(i).width,32);
+    }
+  for (int i = 0; i < list1.size();i++) {
+    list1.get(i).changeX(list1.get(i).speed);
+  }
+  for (int i = 0; i < list2.size();i++) {
+    list2.get(i).changeX(list2.get(i).speed);
+  }
+  for (int i = 0; i < list1.size(); i++) {
+    if (list1.get(i).x + list1.get(i).width <= 0) {
+      list1.get(i).x = 640;
+    }
+  }
+  for (int i = 0; i < list2.size(); i++) {
+    if (list2.get(i).x + list2.get(i).width <= 0) {
+      list2.get(i).x = 640;
+    }
+  }
+  image(frog, x, y, 20, 20);
+  for (int i = 0; i < list1.size(); i++) {
+    if (list1.get(i).isTouching(x,y)) {
+       x = 320;
+       y = 440;
+    }
+  }
+  boolean kontrol = false;
+  int sayi = 0;
+  if (y < 190 && y > 40) {
+  for (int i = 0; i < list2.size(); i++) {
+    if (list2.get(i).isTouching(x,y)) {
+        kontrol = true;
+        sayi = list2.get(i).speed;
+        break;
+    }
+  }
+  if (!(kontrol)) {
+    x = 320;
+    y = 440;
+  }
+  else {
+    x += sayi;
+    sayi = 0;
+  }
+  }
+  if (checkPart3()) {
+    x = 320;
+    y = 440;
+  }
+  text("SCORE:" + score,0,470);
+  if (y < 40 && (!checkPart3())) {
+    score++;
+    x = 320;
+    y = 440;
+  }
+}
+class Obstacle1 {
+  int speed = 0;
+  int x = 0;
+  int y = 0;
+  int width = 0;
+
+  public Obstacle1(int a,int x1, int y1,int w1) {
+    speed = a;
+    speed *= -1;
+    x = x1;
+    y = y1;
+    width = w1;
+  }
+  public void changeX(int a) {
+    x += a;
+  }
+  public boolean isTouching(int x1,int y1) {
+    if (x1 >= x && x1 <= x+width &&  y1 >= y && y1 <= y + 32) {
+     return true;
+    }
+    return false;
+  } 
+}
+class Obstacle2 {
+  int speed = 0;
+  int x = 0;
+  int y = 0;
+  int width = 0;
+  boolean visible = true;
+  public Obstacle2(int a,int x1, int y1,int w1) {
+    speed = a;
+    speed *= -1;
+    x = x1;
+    y = y1;
+    width = w1;
+  }
+  public void changeVisible(boolean a) {
+    visible = a;
+  }
+  public void changeX(int a) {
+    x += a;
+  }
+  public boolean isTouching(int x1,int y1) {
+    if (x1 >= x && x1 <= x+width &&  y1 >= y && y1 <= y + 32) {
+     return true;
+    }
+    return false;
+  } 
+}
+void keyPressed()
+{
+  if(key == CODED)
+  {
+    if (keyCode == LEFT)
+    { if (x > 10) {
+      x -= 20;}
+    }
+    if(keyCode == RIGHT)
+    {if (x < 620) {
+      x += 20;}
+    }
+    if (keyCode == UP)
+    {if (y > 10){
+      y -= 20;}
+    }
+    if(keyCode == DOWN)
+    {if (y < 430){
+      y += 20;}
+    }
+  }
+}
+public boolean checkPart3() {
+  if (y < 40 && x > 40 && x < 80) {
+      return true;
+    }
+  else if (y < 40 && x > 160 && x < 200) {
+      return true;
+    }
+  else if (y < 40 && x > 280 && x < 320) {
+      return true;
+    }
+  else if (y < 40 && x > 400 && x < 440) {
+      return true;
+    }
+  else if (y < 40 && x > 520 && x < 560) {
+      return true;
+    }
+  return false;
+}
+  
+ 
